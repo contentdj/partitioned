@@ -123,7 +123,15 @@ module ActiveRecord
       # that are used to determine the child table this insert should be
       # redirected to)
       #
-      actual_arel_table = @klass.dynamic_arel_table(Hash[*values.map{|k,v| [k.name,v]}.flatten]) if @klass.respond_to?(:dynamic_arel_table)
+      # actual_arel_table = @klass.dynamic_arel_table(Hash[*values.map{|k,v| [k.name,v]}.flatten]) if @klass.respond_to?(:dynamic_arel_table)
+      if @klass.respond_to?(:dynamic_arel_table)
+        # Hash[*values.map{|k,v| [k.name,v]}.flatten]
+        hash = {}
+        values.map do |k,v|
+          hash[k.name] = v
+        end
+        actual_arel_table = @klass.dynamic_arel_table(hash) 
+      end
       actual_arel_table = @table unless actual_arel_table
       im.into actual_arel_table
 
