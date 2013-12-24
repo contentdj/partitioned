@@ -24,7 +24,14 @@ module Partitioned
     def arel_attributes_values(include_primary_key = true, include_readonly_attributes = true, attribute_names = @attributes.keys)
       attrs = super
       actual_arel_table = dynamic_arel_table()
-      return Hash[*attrs.map{|k,v| [actual_arel_table[k.name], v]}.flatten]
+      # Below is causing hstore and array extension to fail
+      # return Hash[*attrs.map{|k,v| [actual_arel_table[k.name], v]}.flatten]
+      result = {}
+      attrs.map do |k,v|
+        new_k = actual_arel_table[k.name] 
+        result[new_k] = v
+      end
+      result
     end
 
     #
